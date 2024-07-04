@@ -1,0 +1,51 @@
+<div class="modal-header">
+    <h4 class="modal-title">{{::isUpdate ? 'Update terminal' : 'Create terminal'}}</h4>
+</div>
+<div class="modal-body">
+    <div class="row">
+
+        <div class="col-md-9">
+            <form name="pipelineForm" class="form-horizontal contract-form compact-form" novalidate>
+                <fieldset ng-disabled="isSaving">
+
+                    <div class="form-group compact-form__field {{terminalInfo.changes[field.key] ? '--modified' : ''}}" ng-repeat="field in formDef.fields">
+                        <label class="control-label col-md-5" for="contract-form__field-input--{{::field.key}}" uib-tooltip="{{::field.labelTooltip}}">{{::field.label}}</label>
+                        <div class="col-md-7" ng-if="::field.type === 'string' && !field.multiline">
+                            <input type="text" id="contract-form__field-input--{{::field.key}}" class="form-control contract-form__field-input--{{::field.key}}" ng-model="form[field.key]" ng-required="::getFieldState(field.required)" ng-disabled="field.isDisabled()" placeholder="{{::field.label}}" ng-change="field.onChange(field, form)">
+                        </div>
+                        <div class="col-md-7" ng-if="::field.type === 'string' && field.multiline">
+                            <textarea rows="2" id="contract-form__field-input--{{::field.key}}" class="form-control contract-form__field-input--{{::field.key}}" ng-model="form[field.key]" ng-required="::getFieldState(field.required)" ng-disabled="field.isDisabled()" placeholder="{{field.label}}" ng-change="field.onChange(field, form)"></textarea>
+                        </div>
+                        <div class="col-md-7" ng-if="::field.type === 'select'">
+                            <select id="contract-form__field-input--{{::field.key}}" class="form-control contract-form__field-input--{{::field.key}}" ng-options="o.value as o.label for o in field.options" ng-model="form[field.key]" ng-required="::getFieldState(field.required)" ng-disabled="field.isDisabled()" ng-change="field.onChange(field, form)"></select>
+                        </div>
+
+                        <div class="col-md-7" ng-if="::field.type === 'number'">
+                            <input type="number" id="contract-form__field-input--{{::field.key}}" class="form-control contract-form__field-input--{{::field.key}}" ng-model="form[field.key]" ng-required="::getFieldState(field.required)" ng-disabled="field.isDisabled()" placeholder="{{::field.label}}" min="{{field.getMin(field, form)}}" max="{{field.getMax(field, form)}}" step="{{field.getStep(field, form)}}" ng-change="field.onChange(field, form)">
+                        </div>
+                        <div class="col-md-7" ng-if="::field.type === 'boolean'">
+                            <input type="checkbox" id="contract-form__field-input--{{::field.key}}" class="checkbox contract-form__field-input--{{::field.key}}" ng-model="form[field.key]" ng-required="::getFieldState(field.required)" ng-disabled="field.isDisabled()" ng-change="field.onChange(field, form)">
+                        </div>
+                        <div class="col-md-7" ng-if="::field.type === 'date'">
+                            <div class="input-group">
+                                <input type="text" id="contract-form__field-input--{{::field.key}}" class="form-control contract-form__field-input--{{::field.key}}" uib-datepicker-popup datetimepicker-neutral-timezone ng-model="form[field.key]" is-open="opened[field.key]" ng-required="::getFieldState(field.required)" ng-disabled="field.isDisabled()" close-text="Close" placeholder="{{::field.label}}" ng-change="field.onChange(field, form)" />
+                                <span class="input-group-btn" ng-if="!field.isDisabled()">
+                                    <button type="button" class="btn btn-default" ng-click="opened[field.key] = true"><i class="glyphicon glyphicon-calendar"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+
+    </div>
+
+    <uib-alert type="danger" class="form-errors" ng-if="sendError">
+        <div class="form-errors__item" ng-if="sendError">{{errorMessage}}</div>
+    </uib-alert>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-disabled="terminalForm.$invalid || isSaving || isBusy" ng-click="send()">{{isUpdate ? 'Update' : 'Create'}}</button>
+    <button class="btn btn-warning" type="button" ng-disabled="isSaving" ng-click="cancel()">Cancel</button>
+</div>
